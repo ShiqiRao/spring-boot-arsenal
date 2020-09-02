@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/arsenal
+    username: root
+    password: 17171717
+    platform: mysql
+    schema: classpath:schema.sql
+    data: classpath:data.sql
+    continue-on-error: true
+    initialization-mode: always

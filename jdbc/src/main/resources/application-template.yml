@@ -1,0 +1,15 @@
+#application.yml模板
+spring:
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/dev?useSSL=false
+    username: root
+    password: dbpass
+    schema-username: root
+    schema-password: dbpass
+    data-username: root
+    data-password: dbpass
+    platform: mysql
+    schema: classpath:schema.sql
+    data: classpath:data.sql
+    continue-on-error: true
+    initialization-mode: always
