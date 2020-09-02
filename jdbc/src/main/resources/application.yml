@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/arsenal
+    url: jdbc:mysql://localhost:3306/arsenal?serverTimezone=UTC
     username: root
-    password: 17171717
+    password: rq5425809
     platform: mysql
     schema: classpath:schema.sql
     data: classpath:data.sql

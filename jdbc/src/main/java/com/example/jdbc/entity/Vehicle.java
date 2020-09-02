@@ -1,4 +1,4 @@
-package com.example.jdbc;
+package com.example.jdbc.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

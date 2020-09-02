@@ -4,8 +4,10 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/dev?useSSL=false
     username: root
     password: dbpass
+    #当执行schema.sql的用户不同时可以配置以下两项
     schema-username: root
     schema-password: dbpass
+    #当执行data.sql的用户不同时可以配置以下两项
     data-username: root
     data-password: dbpass
     platform: mysql
