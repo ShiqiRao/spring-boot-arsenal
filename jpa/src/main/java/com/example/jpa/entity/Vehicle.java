@@ -5,40 +5,25 @@ import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 @Entity
-@Table(name = "user")
 @Data
 @Accessors(chain = true)
-public class User implements Serializable {
+@Table(name = "vehicle")
+public class Vehicle implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 主键
-     */
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    /**
-     * 用户名
-     */
     @Column(name = "name")
     private String name;
 
-    /**
-     * 账户名
-     */
-    @Column(name = "account")
-    private String account;
+    @Column(name = "price")
+    private BigDecimal price;
 
-    /**
-     * 密码
-     */
-    @Column(name = "password")
-    private String password;
-
-    @OneToOne
-    private Vehicle vehicle;
 }
