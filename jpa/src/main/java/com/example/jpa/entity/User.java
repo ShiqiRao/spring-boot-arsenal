@@ -5,6 +5,7 @@ import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "user")
@@ -38,6 +39,12 @@ public class User implements Serializable {
      */
     @Column(name = "password")
     private String password;
+
+    /**
+     * 创建时间
+     */
+    @Column(name = "create_time", columnDefinition = "TIMESTAMP")
+    private LocalDateTime createTime;
 
     @OneToOne
     private Vehicle vehicle;
