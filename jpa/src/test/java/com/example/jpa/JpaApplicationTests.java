@@ -2,8 +2,10 @@ package com.example.jpa;
 
 import com.example.jpa.entity.Patient;
 import com.example.jpa.entity.User;
+import com.example.jpa.entity.Vehicle;
 import com.example.jpa.repository.PatientRepository;
 import com.example.jpa.repository.UserRepository;
+import com.example.jpa.repository.VehicleRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,6 +33,9 @@ class JpaApplicationTests {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    VehicleRepository vehicleRepository;
 
     @Test
     void contextLoads() {
@@ -92,7 +97,7 @@ class JpaApplicationTests {
         String nameLike = keyWord == null ? null : String.format("%%%s%%", keyWord);
         if (start != null && end != null && !StringUtils.isEmpty(nameLike)) {
             //查询条件同时包含时间与关键字
-            return userRepository.queryNative(start, end, nameLike);
+            return userRepository.findByCreateTimeBetweenAndNameLike(start, end, nameLike);
         } else if (start != null && end != null && StringUtils.isEmpty(nameLike)) {
             //查询条件仅包含时间
             return userRepository.findByCreateTimeBetween(start, end);
@@ -136,6 +141,21 @@ class JpaApplicationTests {
             query.where(predicates.toArray(new Predicate[0]));
             return query.getRestriction();
         }));
+    }
+
+    @Test
+    public void testOneToMany() {
+        User user = userRepository.getOne(1);
+        List<Vehicle> vehicles = user.getVehicles();
+        assert vehicles.size() > 0;
+    }
+
+    @Test
+    public void testManyToOne() {
+        Vehicle vehicle = vehicleRepository.getOne(1);
+        User user = vehicle.getUser();
+        assert user != null;
+        System.out.println(user.toString());
     }
 
 }
