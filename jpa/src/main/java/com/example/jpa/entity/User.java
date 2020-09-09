@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "user")
@@ -46,6 +47,7 @@ public class User implements Serializable {
     @Column(name = "create_time", columnDefinition = "TIMESTAMP")
     private LocalDateTime createTime;
 
-    @OneToOne
-    private Vehicle vehicle;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<Vehicle> vehicles;
+
 }

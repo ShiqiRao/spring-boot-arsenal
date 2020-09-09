@@ -1,9 +1,8 @@
 package com.example.jpa;
 
-import com.example.jpa.entity.Patient;
-import com.example.jpa.entity.User;
-import com.example.jpa.repository.PatientRepository;
-import com.example.jpa.repository.UserRepository;
+import com.example.jpa.entity.*;
+import com.example.jpa.entity.Class;
+import com.example.jpa.repository.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,9 +17,9 @@ import javax.persistence.Persistence;
 import javax.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Transactional
 @SpringBootTest
@@ -31,6 +30,18 @@ class JpaApplicationTests {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    VehicleRepository vehicleRepository;
+
+    @Autowired
+    ClassRepository classRepository;
+
+    @Autowired
+    StudentRepository studentRepository;
+
+    @Autowired
+    TeacherRepository teacherRepository;
 
     @Test
     void contextLoads() {
@@ -92,7 +103,7 @@ class JpaApplicationTests {
         String nameLike = keyWord == null ? null : String.format("%%%s%%", keyWord);
         if (start != null && end != null && !StringUtils.isEmpty(nameLike)) {
             //查询条件同时包含时间与关键字
-            return userRepository.queryNative(start, end, nameLike);
+            return userRepository.findByCreateTimeBetweenAndNameLike(start, end, nameLike);
         } else if (start != null && end != null && StringUtils.isEmpty(nameLike)) {
             //查询条件仅包含时间
             return userRepository.findByCreateTimeBetween(start, end);
@@ -136,6 +147,39 @@ class JpaApplicationTests {
             query.where(predicates.toArray(new Predicate[0]));
             return query.getRestriction();
         }));
+    }
+
+    @Test
+    public void testOneToOne() {
+        Class clazz = classRepository.getOne(1);
+        ClassRoom room = clazz.getClassRoom();
+        assert room != null;
+        assert room.getLocation() != null;
+    }
+
+    @Test
+    public void testOneToMany() {
+        Class clazz = classRepository.getOne(1);
+        List<Student> students = clazz.getStudents();
+        assert students.size() > 0;
+    }
+
+    @Test
+    public void testManyToOne() {
+        Student student = studentRepository.getOne(1);
+        Class clazz = student.getClazz();
+        assert clazz != null;
+        assert clazz.getClassName() != null;
+    }
+
+    @Test
+    public void testManyToMany() {
+        Teacher teacher = teacherRepository.getOne(1);
+        Set<Class> classSet = teacher.getClasses();
+        assert classSet.size() > 0;
+        Class clazz = classRepository.getOne(1);
+        Set<Teacher> teachers = clazz.getTeachers();
+        assert teachers.size() > 0;
     }
 
 }
