@@ -1,8 +1,11 @@
 package com.example.jpa;
 
-import com.example.jpa.entity.*;
-import com.example.jpa.entity.Class;
-import com.example.jpa.repository.*;
+import com.example.jpa.entity.Patient;
+import com.example.jpa.entity.User;
+import com.example.jpa.entity.Vehicle;
+import com.example.jpa.repository.PatientRepository;
+import com.example.jpa.repository.UserRepository;
+import com.example.jpa.repository.VehicleRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,9 +20,9 @@ import javax.persistence.Persistence;
 import javax.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Transactional
 @SpringBootTest
@@ -33,15 +36,6 @@ class JpaApplicationTests {
 
     @Autowired
     VehicleRepository vehicleRepository;
-
-    @Autowired
-    ClassRepository classRepository;
-
-    @Autowired
-    StudentRepository studentRepository;
-
-    @Autowired
-    TeacherRepository teacherRepository;
 
     @Test
     void contextLoads() {
@@ -150,36 +144,18 @@ class JpaApplicationTests {
     }
 
     @Test
-    public void testOneToOne() {
-        Class clazz = classRepository.getOne(1);
-        ClassRoom room = clazz.getClassRoom();
-        assert room != null;
-        assert room.getLocation() != null;
-    }
-
-    @Test
     public void testOneToMany() {
-        Class clazz = classRepository.getOne(1);
-        List<Student> students = clazz.getStudents();
-        assert students.size() > 0;
+        User user = userRepository.getOne(1);
+        List<Vehicle> vehicles = user.getVehicles();
+        assert vehicles.size() > 0;
     }
 
     @Test
     public void testManyToOne() {
-        Student student = studentRepository.getOne(1);
-        Class clazz = student.getClazz();
-        assert clazz != null;
-        assert clazz.getClassName() != null;
-    }
-
-    @Test
-    public void testManyToMany() {
-        Teacher teacher = teacherRepository.getOne(1);
-        Set<Class> classSet = teacher.getClasses();
-        assert classSet.size() > 0;
-        Class clazz = classRepository.getOne(1);
-        Set<Teacher> teachers = clazz.getTeachers();
-        assert teachers.size() > 0;
+        Vehicle vehicle = vehicleRepository.getOne(1);
+        User user = vehicle.getUser();
+        assert user != null;
+        System.out.println(user.toString());
     }
 
 }

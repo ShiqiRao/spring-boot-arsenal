@@ -1,16 +1,19 @@
 package com.example.jpa.entity;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "user")
-@Data
+@Getter
+@Setter
 @Accessors(chain = true)
 public class User implements Serializable {
 
@@ -47,7 +50,17 @@ public class User implements Serializable {
     @Column(name = "create_time", columnDefinition = "TIMESTAMP")
     private LocalDateTime createTime;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private List<Vehicle> vehicles;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Vehicle> vehicles = new ArrayList<>();
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", account='" + account + '\'' +
+                ", password='" + password + '\'' +
+                ", createTime=" + createTime +
+                '}';
+    }
 }

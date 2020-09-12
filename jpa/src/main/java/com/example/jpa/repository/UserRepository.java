@@ -26,7 +26,7 @@ public interface UserRepository extends JpaRepository<User, Integer>, JpaSpecifi
                     "user0_.account as account2_1_, " +
                     "user0_.create_time as create_t3_1_, " +
                     "user0_.name as name4_1_, " +
-                    "user0_.password as password5_1_, " +
+                    "user0_.password as password5_1_ " +
                     "from user user0_ " +
                     "where (user0_.create_time between ? and ?) and (user0_.name like ?)")
     List<User> queryNative(LocalDateTime start, LocalDateTime end, String keyWord);
