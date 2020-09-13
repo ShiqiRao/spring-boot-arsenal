@@ -7,6 +7,7 @@ import com.mongodb.client.MongoClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 /**
  * TODO
@@ -14,6 +15,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
  * @Author Shiqi Rao
  * @Date 2020-09-11
  */
+@EnableMongoRepositories(basePackages = "com.example.mongodb.repository")
 @Configuration
 public class MongoConfig {
 
