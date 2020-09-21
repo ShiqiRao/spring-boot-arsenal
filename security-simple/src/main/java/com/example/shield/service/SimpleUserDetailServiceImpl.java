@@ -10,10 +10,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.stream.Collectors;
 
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class SimpleUserDetailServiceImpl implements UserDetailsService {
@@ -26,11 +28,17 @@ public class SimpleUserDetailServiceImpl implements UserDetailsService {
         if (tUser == null) {
             throw new UsernameNotFoundException("username not found");
         }
-        return new User(tUser.getUsername(), tUser.getPassword(), getAuthorities());
+        return new User(tUser.getUsername(), tUser.getPassword(), getAuthorities(tUser));
     }
 
-    private Collection<GrantedAuthority> getAuthorities() {
-        //获取用户的角色权限，本示例不包含权限控制，故简化实现过程
-        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+    private Collection<GrantedAuthority> getAuthorities(TUser user) {
+        return user.getRoles()
+                .stream()
+                .flatMap(
+                        r -> r.getAuthorities()
+                                .stream()
+                                .map(a -> new SimpleGrantedAuthority(a.getName()))
+                )
+                .collect(Collectors.toList());
     }
 }

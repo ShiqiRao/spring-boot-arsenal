@@ -18,7 +18,6 @@ public class TRole {
     @Id
     @Column(name = "id", nullable = false)
     private Integer id;
-
     @Column(name = "name", nullable = false)
     private String name;
 
@@ -26,7 +25,7 @@ public class TRole {
     private Collection<TUser> users;
 
     @ManyToMany
-    @JoinTable(name = "roles_authority",
+    @JoinTable(name = "roles_authorities",
             joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "authority_id", referencedColumnName = "id"))
     private Collection<TAuthority> authorities;

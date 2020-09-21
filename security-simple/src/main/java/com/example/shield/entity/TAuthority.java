@@ -19,11 +19,10 @@ public class TAuthority {
     @Id
     @Column(name = "id", nullable = false)
     private Integer id;
-
     @Column(name = "name", nullable = false)
     private String name;
 
     @ManyToMany(mappedBy = "authorities")
-    private Collection<Role> roles;
+    private Collection<TRole> roles;
 
 }

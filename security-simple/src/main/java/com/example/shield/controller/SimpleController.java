@@ -7,13 +7,12 @@ import com.example.shield.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Arrays;
 
 @RequiredArgsConstructor
 @RestController
@@ -41,7 +40,31 @@ public class SimpleController {
         //用来代表受保护的资源
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         //获取当前用户名
-        return R.ok("Hi! This is " + authentication.getName());
+        return R.ok(String.format("Hi! This is %s.I have some authorities like %s.",
+                authentication.getName(), Arrays.toString(((User) authentication.getPrincipal()).getAuthorities().toArray())));
     }
 
+    @GetMapping("/administrator")
+    public R<String> administrator() {
+        //只有administrator才可以访问的接口
+        return R.ok("administrator");
+    }
+
+    @GetMapping("/staff")
+    public R<String> staff() {
+        //只有staff才可以访问的接口
+        return R.ok("staff");
+    }
+
+    @GetMapping("/read")
+    public R<String> read() {
+        //用以表示读操作接口
+        return R.ok("blah blah blah……");
+    }
+
+    @PostMapping("/write")
+    public R<String> write(@RequestParam String input) {
+        //用以表示写操作接口
+        return R.ok(input);
+    }
 }
