@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/shield?serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/shield?serverTimezone=GMT%2B8&useSSL=false
     username: root
     password: rq5425809
     platform: mysql

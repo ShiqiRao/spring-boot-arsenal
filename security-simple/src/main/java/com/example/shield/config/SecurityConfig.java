@@ -7,9 +7,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
+import javax.sql.DataSource;
 import java.io.PrintWriter;
 
 @Configuration
@@ -17,6 +21,8 @@ import java.io.PrintWriter;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final ObjectMapper mapper;
+    private final DataSource dataSource;
+    private final UserDetailsService userDetailsService;
 
     @Bean
     public PasswordEncoder bCryptPasswordEncoder() {
@@ -30,12 +36,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 //表示account接口的访问不受限制
                 .antMatchers("/account").permitAll()
+
                 //表示所有接口，登录之后就能访问
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
-                //定义登录页面，未登录时，访问一个需要登录之后才能访问的接口，会自动跳转到该页面
-                //.loginPage("/login")
+                //.loginPage("/login") 添加该项将定义登录页面，未登录时，访问一个需要登录之后才能访问的接口，会自动跳转到该页面
                 //登录处理接口
                 .loginProcessingUrl("/session")
                 //定义登录时，用户名的 key，默认为 username
@@ -49,6 +55,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     out.write(mapper.writeValueAsString(R.<Void>ok(null)));
                     out.flush();
                 })
+                //登陆失败的处理器
                 .failureHandler((req, resp, exception) -> {
                     resp.setContentType("application/json;charset=utf-8");
                     PrintWriter out = resp.getWriter();
@@ -60,6 +67,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .logout()
                 .logoutUrl("/logout")
+                //登出成功的处理器
                 .logoutSuccessHandler((req, resp, authentication) -> {
                     resp.setContentType("application/json;charset=utf-8");
                     PrintWriter out = resp.getWriter();
@@ -68,10 +76,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 })
                 .permitAll()
                 .and()
-                .httpBasic()
+                .rememberMe()
+                .rememberMeParameter("remember-me")
+                .tokenRepository(persistentTokenRepository())
+                .userDetailsService(userDetailsService)
                 .and()
+                .httpBasic()
+                .disable()
                 .csrf()
                 .disable();
+    }
+
+    @Bean
+    public PersistentTokenRepository persistentTokenRepository() {
+        JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
+        tokenRepository.setDataSource(dataSource);
+        return tokenRepository;
     }
 
 }
