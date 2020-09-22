@@ -27,11 +27,11 @@ public class SimpleController {
         if (duplicated != null) {
             return R.failed("username重复");
         }
-        TUser TUser = new TUser()
+        TUser tUser = new TUser()
                 .setUsername(userDto.getUsername())
                 //数据库中存储明文密码会降低系统安全性，故存储前使用encoder为密码加密。
                 .setPassword(encoder.encode(userDto.getPassword()));
-        userRepository.save(TUser);
+        userRepository.save(tUser);
         return R.ok(null);
     }
 
