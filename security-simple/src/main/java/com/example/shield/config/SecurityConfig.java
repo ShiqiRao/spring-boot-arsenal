@@ -36,10 +36,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 //表示account接口的访问不受限制
                 .antMatchers("/account").permitAll()
-                .antMatchers("/read").hasAnyAuthority("READ_AUTHORITY")
-                .antMatchers("/write").hasAnyAuthority("WRITE_AUTHORITY")
-                .antMatchers("/administrator").hasAnyRole("ADMINISTRATOR_ROLE")
-                .antMatchers("/staff").hasAnyRole("STAFF_ROLE")
+                .antMatchers("/read").hasAuthority("READ_AUTHORITY")
+                .antMatchers("/write").hasAuthority("WRITE_AUTHORITY")
+                .antMatchers("/administrator").hasRole("ADMINISTRATOR")
+                .antMatchers("/staff").hasAnyRole("STAFF", "ADMINISTRATOR")
                 //表示所有接口，登录之后就能访问
                 .anyRequest().authenticated()
                 .and()
