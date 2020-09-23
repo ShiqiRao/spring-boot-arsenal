@@ -38,8 +38,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 //表示account接口的访问不受限制
                 .antMatchers("/account").permitAll()
-                .antMatchers("/read").hasAuthority("READ_AUTHORITY")
                 .antMatchers("/write").hasAuthority("WRITE_AUTHORITY")
+                .antMatchers("/read").hasAnyAuthority("READ_AUTHORITY", "WRITE_AUTHORITY")
                 .antMatchers("/administrator").hasRole("ADMINISTRATOR")
                 .antMatchers("/staff").hasAnyRole("STAFF", "ADMINISTRATOR")
                 //表示所有接口，登录之后就能访问

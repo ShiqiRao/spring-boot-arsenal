@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import javax.management.relation.Role;
 import javax.persistence.*;
 import java.util.Collection;
 

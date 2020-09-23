@@ -21,7 +21,7 @@ import java.util.List;
 @Transactional
 @Service
 @RequiredArgsConstructor
-public class SimpleUserDetailServiceImpl implements UserDetailsService {
+public class AuthorityUserDetailServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
 
@@ -36,6 +36,7 @@ public class SimpleUserDetailServiceImpl implements UserDetailsService {
 
     private Collection<GrantedAuthority> getAuthorities(TUser user) {
         List<GrantedAuthority> authorities = new ArrayList<>();
+        //将用户的角色以及角色的权限一起加入至GrantedAuthority集合
         for (TRole role : user.getRoles()) {
             authorities.add(new SimpleGrantedAuthority(role.getName()));
             for (TAuthority authority : role.getAuthorities()) {
