@@ -3,16 +3,20 @@ package com.example.shield.config;
 import com.example.shield.domain.R;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -96,7 +100,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //达到上限后是否阻止登陆
                 .maxSessionsPreventsLogin(true)
                 //失效session策略
-                .expiredSessionStrategy(new ParallelismSessionExpiredStrategy(mapper));
+                .expiredSessionStrategy(new ParallelismSessionExpiredStrategy(mapper))
+                .sessionRegistry(sessionRegistry());
     }
 
     @Bean
@@ -104,6 +109,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
         tokenRepository.setDataSource(dataSource);
         return tokenRepository;
+    }
+
+    @Bean
+    public SessionRegistry sessionRegistry() {
+        //用于访问Session
+        return new SessionRegistryImpl();
+    }
+
+    @Bean
+    public static ServletListenerRegistrationBean httpSessionEventPublisher() {
+        //用于告诉Spring 将session信息存储于sessionRegistry
+        return new ServletListenerRegistrationBean(new HttpSessionEventPublisher());
     }
 
 }
