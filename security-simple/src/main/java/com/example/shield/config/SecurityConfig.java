@@ -89,7 +89,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .httpBasic()
                 .disable()
                 .csrf()
-                .disable();
+                .disable()
+                .sessionManagement()
+                //并发session上限为1
+                .maximumSessions(1)
+                //达到上限后是否阻止登陆
+                .maxSessionsPreventsLogin(true)
+                //失效session策略
+                .expiredSessionStrategy(new ParallelismSessionExpiredStrategy(mapper));
     }
 
     @Bean
