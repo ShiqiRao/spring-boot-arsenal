@@ -2,6 +2,7 @@ package com.example.jwt.filter;
 
 
 import com.example.jwt.Constants;
+import com.example.jwt.domain.JwtUser;
 import com.example.jwt.util.JwtTokenUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -10,7 +11,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -21,8 +21,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -44,9 +43,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             jwtToken = requestTokenHeader.substring(7);
         } else {
             logger.warn("JWT Token does not begin with Bearer String");
-            for (Cookie cookie : request.getCookies()) {
-                if (Constants.JWT.equals(cookie.getName())) {
-                    jwtToken = cookie.getValue();
+            if (request.getCookies() != null) {
+                for (Cookie cookie : request.getCookies()) {
+                    if (Constants.JWT.equals(cookie.getName())) {
+                        jwtToken = cookie.getValue();
+                    }
                 }
             }
         }
@@ -66,7 +67,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         if (setAuthentication) {
             //如果token有效，则进行手动授权并将其设置到Spring Security的上下文中
             String userJson = jwtTokenUtil.getClaimFromToken(jwtToken, (c) -> c.get(Constants.PRINCIPAL, String.class));
-            User userDetails = objectMapper.readValue(userJson, User.class);
+            JwtUser jwtUser = objectMapper.readValue(userJson, JwtUser.class);
+            User userDetails = new User(jwtUser.getUsername(), jwtUser.getPassword(), jwtUser.getAuthorities()
+                    .stream()
+                    .map(SimpleGrantedAuthority::new)
+                    .collect(Collectors.toList()));
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                     userDetails, null, userDetails.getAuthorities());
             usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

@@ -37,7 +37,7 @@ public class JwtAuthenticationController {
     }
 
     private void authenticate(String username, String password) throws Exception {
-        //验证用户名密码
+        //并不在该类进行验证用户名密码，而是委托给AuthenticationManager
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         } catch (DisabledException e) {
@@ -48,7 +48,7 @@ public class JwtAuthenticationController {
     }
 
     private void setCookie(String token, HttpServletResponse response) {
-        //将JWT写入cookie(该步骤为可选项)
+        //将JWT写入cookie，用于减少客户端对Header的操作(该步骤为可选项)
         Cookie cookie = new Cookie(Constants.JWT, token);
         response.addCookie(cookie);
     }

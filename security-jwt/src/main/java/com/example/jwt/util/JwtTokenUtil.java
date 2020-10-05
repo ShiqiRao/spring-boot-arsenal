@@ -2,6 +2,7 @@ package com.example.jwt.util;
 
 
 import com.example.jwt.Constants;
+import com.example.jwt.domain.JwtUser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
@@ -9,6 +10,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -61,8 +64,15 @@ public class JwtTokenUtil implements Serializable {
     public String generateToken(UserDetails userDetails) throws JsonProcessingException {
         //为某用户生成token
         Map<String, Object> claims = new HashMap<>();
-        //……此处可以根据需求在claims中新增用户状态信息
-        claims.put(Constants.PRINCIPAL, objectMapper.writeValueAsString(userDetails));
+        //……此处可以根据需求在claims中新增用户状态信息,此处将principle以JSONString的格式加入到Claims中属于可选项
+        JwtUser principal = new JwtUser()
+                .setUsername(userDetails.getUsername())
+                .setPassword(userDetails.getPassword())
+                .setAuthorities(userDetails.getAuthorities()
+                        .stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .collect(Collectors.toList()));
+        claims.put(Constants.PRINCIPAL, objectMapper.writeValueAsString(principal));
         return doGenerateToken(claims, userDetails.getUsername());
     }
 
